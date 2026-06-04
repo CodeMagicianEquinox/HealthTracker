@@ -34,7 +34,7 @@ class StorageManager {
     func addEntry(_ entry: DiaryEntry) {
         var allTimeEntries = loadEntries()
         allTimeEntries.append(entry)
-        saveEntries(allTimeEntries)
+        self.saveEntries(allTimeEntries)
     }
     
     func getTodayEntries() -> [DiaryEntry] {
@@ -45,6 +45,12 @@ class StorageManager {
         return entries.filter { entry in
             calendar.isDate(entry.timestamp, inSameDayAs: today)
         }
+    }
+    
+    func getTodayTotal(for type: EntryType) -> Double {
+        self.getTodayEntries()
+            .filter { $0.type == type }
+            .reduce(0) { $0 + $1.value }
     }
     
 }

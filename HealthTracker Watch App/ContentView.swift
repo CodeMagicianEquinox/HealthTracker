@@ -8,14 +8,17 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var healthViewModel = HealthViewModel()
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        NavigationStack {
+            MainDashboardView(healthviewModel: healthViewModel)
+            
         }
-        .padding()
+        .onAppear {
+            //refresh current daily totals
+            healthViewModel.refreshDailyTotals()
+        }
     }
 }
 
