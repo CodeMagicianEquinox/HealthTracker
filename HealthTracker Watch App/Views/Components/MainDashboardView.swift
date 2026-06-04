@@ -3,6 +3,8 @@ import SwiftUI
 struct MainDashboardView: View {
     @ObservedObject var healthviewModel: HealthViewModel
     
+    let ringSize = 60
+    
     
     var body: some View {
         ScrollView {
@@ -15,10 +17,20 @@ struct MainDashboardView: View {
                 // MARK: - Progress Rings Row
                 HStack(spacing: 16) {
                     VStack (spacing: 6) {
-                        // Progress Ring Calories
+                        ProgressRingView(
+                            progress: healthviewModel.caloriesProgress,
+                            icon: "flame.fill",
+                            color: .orange,
+                            size: 60
+                        )
                     }
                         VStack (spacing: 6) {
-                            // Progress Ring Water
+                            ProgressRingView(
+                                progress: healthviewModel.waterProgress,
+                                icon: EntryType.water.icon,
+                                color: EntryType.water.color,
+                                size: 60
+                        )
                     }
                 }
             }

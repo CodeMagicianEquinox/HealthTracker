@@ -19,6 +19,14 @@ enum EntryType: String, Codable, CaseIterable{
         case .calories: return Color.orange
         }
     }
+    
+    var icon: String {
+        switch self {
+        case .water: return "drop.fill"
+        case .calories: return "flame.fill"
+        }
+    }
+    
 }
 
 struct DiaryEntry: Identifiable, Codable {
@@ -34,4 +42,3 @@ struct DiaryEntry: Identifiable, Codable {
         self.timestamp = timestamp
     }
 }
-
