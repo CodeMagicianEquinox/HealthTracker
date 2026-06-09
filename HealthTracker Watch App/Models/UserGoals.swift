@@ -7,5 +7,5 @@ struct UserGoals: Codable {
     
     static let defaultGoals = UserGoals(
         dailyCaloriesGoal: 2000,
-        dailyWaterGoal: 2)
+        dailyWaterGoal: 2000)
 }

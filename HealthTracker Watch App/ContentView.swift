@@ -12,8 +12,7 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack {
-            MainDashboardView(healthviewModel: healthViewModel)
-            
+            MainDashboardView(healthViewModel: healthViewModel)
         }
         .onAppear {
             //refresh current daily totals
