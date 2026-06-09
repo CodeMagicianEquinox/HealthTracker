@@ -8,6 +8,10 @@ class HealthViewModel: ObservableObject {
     @Published var todaysCalories: Double = 0
     @Published var goals: UserGoals
 
+    @Published var currentQuote: MotivationalQuote?
+    @Published var isLoadingQuote: Bool = false
+    @Published var showQuoteOverlay: Bool = false
+
     // MARK: - Computed Properties
     var caloriesProgress: Double {
         min(todaysCalories / goals.dailyCaloriesGoal, 1)
@@ -19,6 +23,7 @@ class HealthViewModel: ObservableObject {
 
     // MARK: - Services/Managers --> Access the class by putting "<ClassName>.shared"
     private let storageManager = StorageManager.shared
+    private let motivationalQuoteService = MotivationalQuoteService.shared
 
     init() {
         goals = storageManager.loadCurrentGoals()
@@ -41,10 +46,25 @@ class HealthViewModel: ObservableObject {
 
     func addCalories(_ amount: Double) {
         storageManager.addEntry(DiaryEntry(type: .calories, value: amount))
+        fetchQuoteAfterEntry()
     }
 
     func addWater(_ amount: Double) {
         storageManager.addEntry(DiaryEntry(type: .water, value: amount))
+        fetchQuoteAfterEntry()
+    }
+
+    // MARK: - Motivational Quotes
+    func fetchQuoteAfterEntry() {
+        isLoadingQuote = true
+        showQuoteOverlay = true
+
+        Task {
+            currentQuote = await motivationalQuoteService.fetchQuote()
+            isLoadingQuote = false
+
+            try? await Task.sleep(nanoseconds: 5_000_000_000)
+            showQuoteOverlay = false
+        }
     }
 }
-

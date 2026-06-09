@@ -85,5 +85,15 @@ struct MainDashboardView: View {
             }
             .frame(maxWidth: .infinity)
         }
+        .overlay {
+            if healthViewModel.showQuoteOverlay {
+                QuoteOverlayView(
+                    quote: healthViewModel.currentQuote,
+                    isLoading: healthViewModel.isLoadingQuote
+                ) {
+                    healthViewModel.showQuoteOverlay = false
+                }
+            }
+        }
     }
 }
