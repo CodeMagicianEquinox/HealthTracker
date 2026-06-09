@@ -7,5 +7,5 @@ class MotivationalQuoteService {
     private init() {}
 
     // MARK: - API Config
-    private let apiURL = "https://zenquotes.io/api/random"
+    private let apiURL = "https://zenquotes.io/api/random" // GET, POST, PATCH, DELETE, HEAD
 }
