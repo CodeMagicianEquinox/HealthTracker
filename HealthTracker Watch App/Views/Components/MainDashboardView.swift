@@ -82,6 +82,17 @@ struct MainDashboardView: View {
                 }
                 .buttonStyle(PlainButtonStyle())
                 .padding(.top, 4)
+
+                NavigationLink(destination: MotionView()) {
+                    HStack {
+                        Image(systemName: "gyroscope")
+                            .font(.system(size: 12))
+                        Text("Motion")
+                            .font(.system(size: 12))
+                    }
+                    .foregroundColor(.cyan)
+                }
+                .buttonStyle(PlainButtonStyle())
             }
             .frame(maxWidth: .infinity)
         }
