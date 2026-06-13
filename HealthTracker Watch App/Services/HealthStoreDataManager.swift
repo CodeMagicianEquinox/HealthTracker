@@ -116,8 +116,14 @@ class HealthStoreDataManager {
             predicate: nil,
             anchor: nil, // nil ensures communications stays open
             limit: HKObjectQueryNoLimit
-        ) { [weak self] query, samples, deletedObjects, Anchor, error in
+        ) { [weak self] query, samples, deletedObjects, anchor, error in
             guard let self = self else { return }
         }
+
+        query.updateHandler = { [weak self] query, samples, deletedObjects, anchor, error in
+            guard let self = self else { return }
+        }
+
+        healthStore.execute(query)
     }
 }
