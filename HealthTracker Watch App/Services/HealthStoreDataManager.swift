@@ -118,12 +118,79 @@ class HealthStoreDataManager {
             limit: HKObjectQueryNoLimit
         ) { [weak self] query, samples, deletedObjects, anchor, error in
             guard let self = self else { return }
+            self.processHeartRateSamples(samples, onUpdate: onUpdateHandler)
         }
 
         query.updateHandler = { [weak self] query, samples, deletedObjects, anchor, error in
             guard let self = self else { return }
+            self.processHeartRateSamples(samples, onUpdate: onUpdateHandler)
         }
 
         healthStore.execute(query)
     }
+
+    func processHeartRateSamples(
+        _ samples: [HKSample]?,
+        onUpdate: @escaping ([HeartRateSample]) -> Void
+    ) {
+        guard let quantitySamples = samples as? [HKQuantitySample],
+              !quantitySamples.isEmpty else {
+            return
+        }
+
+        let heartRateSamples = quantitySamples.map { sample in
+            let bpm = sample.quantity.doubleValue(for: self.heartRateUnits)
+            return HeartRateSample(
+                bpm: bpm, timestamp: sample.startDate
+                )
+        }
+
+        DispatchQueue.main.async {
+            onUpdate(heartRateSamples)
+        }
+    }
+
+    // MARK: - Calories and Water Methods
+    func getHealthKitTypeAndUnitForEntries(entry: EntryType) -> (HKQuantityType, HKUnit) {
+        switch entry {
+        case .calories:
+            return (caloriesType, caloriesUnit)
+        case .water:
+            return (waterType, waterUnit)
+        }
+    }
+
+    func getTodaysTimePredicate() -> NSPredicate {
+        let calendar = Calendar.current
+        let now = Date()
+        let startOfDay = calendar.startOfDay(for: now)
+        let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)
+
+        return HKQuery.predicateForSamples(withStart: startOfDay, end: endOfDay ?? Date(), options: .strictStartDate)
+    }
+
+    func getTodaysTotal(for entry: EntryType) async throws -> Double {
+        return try await withCheckedThrowingContinuation { continuation in
+            let (hkType, unit) = getHealthKitTypeAndUnitForEntries(entry: entry)
+            let predicate = getTodaysTimePredicate()
+
+            let query = HKStatisticsQuery(
+                quantityType: hkType,
+                quantitySamplePredicate: predicate,
+                options: .cumulativeSum
+            ) { _, statistics, error in
+                if let error {
+                    continuation.resume(throwing: error)
+                    return
+                }
+
+                let todaysTotal = statistics?.sumQuantity()?.doubleValue(for: unit) ?? 0
+                continuation.resume(returning: todaysTotal)
+            }
+
+            healthStore.execute(query)
+        }
+    }
+
+    func addEntry(_ entry: DiaryEntry) async throws {}
 }
