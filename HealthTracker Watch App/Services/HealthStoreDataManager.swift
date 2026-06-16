@@ -192,5 +192,16 @@ class HealthStoreDataManager {
         }
     }
 
-    func addEntry(_ entry: DiaryEntry) async throws {}
+    func addEntry(_ entry: DiaryEntry) async throws {
+        let (hkType, unit) = getHealthKitTypeAndUnitForEntries(entry: entry.type)
+        
+        let sample = createHealthKitSampleFromQuantityTypes(
+            type: hkType,
+            unit: unit,
+            value: entry.value,
+            timestamp: entry.timestamp
+        )
+
+        try await healthStore.save(sample)
+    }
 }

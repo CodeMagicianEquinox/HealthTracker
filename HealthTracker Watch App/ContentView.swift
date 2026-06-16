@@ -14,9 +14,8 @@ struct ContentView: View {
         NavigationStack {
             MainDashboardView(healthViewModel: healthViewModel)
         }
-        .onAppear {
-            //refresh current daily totals
-            healthViewModel.refreshDailyTotals()
+        .task {
+            await healthViewModel.prepareHealthKit()
         }
     }
 }

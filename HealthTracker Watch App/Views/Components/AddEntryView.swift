@@ -74,13 +74,14 @@ struct AddEntryView: View {
                 .padding(.horizontal, 8)
 
                 Button {
-                    if entryType == .calories {
-                        healthViewModel.addCalories(selectedAmount)
-                    } else {
-                        healthViewModel.addWater(selectedAmount)
+                    Task {
+                        if entryType == .calories {
+                            await healthViewModel.addCalories(selectedAmount)
+                        } else {
+                            await healthViewModel.addWater(selectedAmount)
+                        }
+                        dismiss()
                     }
-                    healthViewModel.refreshDailyTotals()
-                    dismiss()
                 } label: {
                     Text("Add")
                         .font(.system(size: 16, weight: .bold))

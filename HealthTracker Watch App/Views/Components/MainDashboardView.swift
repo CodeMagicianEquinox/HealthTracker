@@ -14,6 +14,13 @@ struct MainDashboardView: View {
                     .font(.system(size: 14, weight: .medium))
                     .foregroundStyle(.gray)
 
+                if let statusMessage = healthViewModel.statusMessage {
+                    Text(statusMessage)
+                        .font(.system(size: 10))
+                        .foregroundStyle(.secondary)
+                        .multilineTextAlignment(.center)
+                }
+
                 // MARK: - Progress Rings Row
                 HStack(spacing: 16) {
                     VStack (spacing: 6) {
@@ -49,6 +56,17 @@ struct MainDashboardView: View {
                             .font(.system(size: 9, design: .rounded))
                             .foregroundColor(.gray)
                     }
+                }
+
+                if let currentHeartRate = healthViewModel.currentHeartRate {
+                    HStack(spacing: 6) {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 12))
+                            .foregroundStyle(.red)
+                        Text("\(Int(currentHeartRate.bpm)) BPM")
+                            .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    }
+                    .foregroundStyle(.secondary)
                 }
 
                 HStack(spacing: 12) {
@@ -105,6 +123,25 @@ struct MainDashboardView: View {
                     healthViewModel.showQuoteOverlay = false
                 }
             }
+        }
+    }
+}
+
+private extension HealthViewModel {
+    var statusMessage: String? {
+        if let healthErrorMessage {
+            return healthErrorMessage
+        }
+
+        switch authorizationState {
+        case .unknown:
+            return "Connecting to Health"
+        case .unavailable:
+            return "Using local tracking"
+        case .authorized:
+            return isRefreshingTotals ? "Refreshing Health totals" : nil
+        case .denied:
+            return "Using local tracking until Health access is allowed"
         }
     }
 }
